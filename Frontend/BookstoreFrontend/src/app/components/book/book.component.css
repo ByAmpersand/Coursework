@@ -1,0 +1,124 @@
+/* Загальні стилі */
+/* Загальні стилі */
+body {
+    background: linear-gradient(135deg, #ff9a8b, #fad0c4) !important;
+    background-attachment: fixed; /* Фіксування фону */
+    height: 100vh; /* Переконайтесь, що весь екран заповнений */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+  /* Стилі для контейнера */
+  .container {
+    background: rgba(255, 255, 255, 0.9); /* Білий фон для контейнера */
+    border-radius: 10px; /* Заокруглені кути */
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Легка тінь */
+    max-width: 1200px;
+    margin: 0 auto; /* Центрування контейнера */
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  /* Стилі для заголовка */
+  h1 {
+    color: #4a4a4a;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Стилі таблиці */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .table th {
+    background-color: #f0f4f8;
+    font-weight: bold;
+  }
+  
+  .table tbody tr:hover {
+    background-color: #f7f7f7;
+    cursor: pointer;
+  }
+  
+  /* Кнопки для дій */
+  .btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary {
+    background-color: #2575fc;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #6a11cb;
+  }
+  
+  .btn-danger {
+    background-color: #e52e71;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #ff8a00;
+  }
+  
+  .btn-sm {
+    padding: 6px 12px;
+  }
+  
+  /* Стилі для порожнього стану таблиці */
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-muted {
+    color: #888;
+  }
+  
+  /* Анімація fadeIn для контейнера */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Адаптивність */
+  @media (max-width: 768px) {
+    .table th, .table td {
+      font-size: 0.9rem; /* Зменшення шрифту для маленьких екранів */
+    }
+  
+    .container {
+      padding: 20px;
+    }
+  
+    h1 {
+      font-size: 2rem;
+    }
+  
+    .btn {
+      font-size: 0.8rem;
+    }
+  }
+  

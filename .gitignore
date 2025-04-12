@@ -1,0 +1,29 @@
+
+# === ASP.NET Core ===
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+
+# === Angular ===
+**/node_modules/
+**/dist/
+**/.angular/
+**/environment.*
+**/*.env
+
+# === Logs ===
+*.log
+
+# === OS-specific ===
+.DS_Store
+Thumbs.db
+
+# === IDEs and Editors ===
+.vscode/
+.idea/
+*.swp
+
+# === Git ===
+.git/

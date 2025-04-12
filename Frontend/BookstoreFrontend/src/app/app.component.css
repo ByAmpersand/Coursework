@@ -1,0 +1,97 @@
+/* Загальні стилі */
+body {
+  font-family: 'Poppins', sans-serif; /* Стильний шрифт із Google Fonts */
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9; /* Світлий фон із сучасним відтінком */
+  color: #333; /* Стандартний темний текст */
+}
+
+/* Стилі для навігаційної панелі */
+.navbar {
+  background: linear-gradient(90deg, #6a11cb, #2575fc); /* Градієнтний фон */
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легка тінь */
+  border-radius: 0 0 15px 15px; /* Закруглені кути знизу */
+}
+
+.navbar-brand {
+  margin-left: 50px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.1);
+}
+
+.navbar-toggler {
+  border: none;
+  outline: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.navbar-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Відстань між посиланнями */
+}
+
+.nav-link {
+  color: #e3e3e3; /* Легкий сірий */
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px; /* Закруглені кути */
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.2); /* Напівпрозоре підсвічування */
+  transform: scale(1.05);
+}
+
+.nav-link.active {
+  color: white;
+  background: linear-gradient(90deg, #ff8a00, #e52e71); /* Градієнт для активного посилання */
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Підкреслення активності */
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+  .navbar-nav {
+      flex-direction: column; /* Розташування посилань у стовпчик */
+      gap: 10px; /* Відстань між посиланнями */
+  }
+
+  .nav-link {
+      margin: 5px 0;
+      text-align: center;
+  }
+}
+
+/* Анімація завантаження */
+.navbar {
+  animation: slideDown 0.5s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+      transform: translateY(-100%);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
