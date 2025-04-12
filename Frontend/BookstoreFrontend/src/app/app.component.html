@@ -1,20 +1,61 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiaryk">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Bookstore "BookLife"</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+<div class="d-flex">
+  <!-- Overlay -->
+  <div class="overlay" [class.show]="isMenuOpen" (click)="closeMenu()"></div>
+
+  <!-- Sidebar -->
+  <nav [class.open]="isMenuOpen" class="sidebar" (click)="$event.stopPropagation()">
+    <div class="p-3">
+      <h5 class="text-center">Menu</h5>
+      <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" [routerLink]="['books']">Books</a>
+          <a class="nav-link" [routerLink]="['books']" (click)="closeMenu()">Books</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link"  [routerLink]="['books', 'add']">Add Book</a>
+          <a class="nav-link" [routerLink]="['books', 'add']" (click)="closeMenu()">Add Book</a>
         </li>
       </ul>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<router-outlet></router-outlet>
+  <!-- Main Content -->
+  <div class="flex-grow-1">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
+      <div class="container-fluid d-flex align-items-center">
+        <!-- Menu Button -->
+        <button class="btn btn-outline-primary me-3" (click)="toggleMenu()">☰</button>
+
+        <!-- Logo and Bookstore Name -->
+        <div class="d-flex align-items-center me-3">
+          <img src="assets/bookstore-icon.png" alt="Bookstore Icon" style="width: 100px; height: 60px; margin-right: 10px;">
+          <span class="navbar-brand mb-0">Tales & Tomes</span>
+        </div>
+
+        <!-- Search Bar -->
+        <form class="d-flex flex-grow-1" (submit)="searchBooks()" style="max-width: 600px; margin: 0 auto;">
+          <div class="input-group">
+            <input 
+              class="form-control" 
+              type="search" 
+              placeholder="Search books by title..." 
+              aria-label="Search" 
+              [(ngModel)]="searchQuery" 
+              name="searchQuery">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </form>
+
+        <!-- User Info -->
+        <div class="d-flex align-items-center ms-3">
+          <img src="assets/user-icon.png" alt="User Icon" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+          <span class="username">Ket Jer</span>
+          </div>
+      </div>
+    </nav>
+
+    <!-- Router Outlet -->
+    <div class="p-3">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

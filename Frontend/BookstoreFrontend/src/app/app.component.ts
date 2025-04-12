@@ -6,5 +6,19 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'WMS.UI';
+  isMenuOpen: boolean = false;
+  searchQuery: string = '';
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu(): void {
+    this.isMenuOpen = false;
+  }
+
+  searchBooks(): void {
+    console.log('Searching for books with title:', this.searchQuery);
+    // Додайте логіку для пошуку книг за назвою
+  }
 }

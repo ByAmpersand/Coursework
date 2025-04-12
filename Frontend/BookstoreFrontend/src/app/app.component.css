@@ -9,24 +9,25 @@ body {
 
 /* Стилі для навігаційної панелі */
 .navbar {
-  background: linear-gradient(90deg, #6a11cb, #2575fc); /* Градієнтний фон */
+  /*background: linear-gradient(90deg, #6a11cb, #2575fc); */ /* Градієнтний фон */
+  background: #fff;
   color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легка тінь */
   border-radius: 0 0 15px 15px; /* Закруглені кути знизу */
 }
 
 .navbar-brand {
-  margin-left: 50px;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  transition: transform 0.3s ease-in-out;
+  margin-left: 0; /* Приберіть зайвий відступ */
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center; /* Вирівнювання іконки та тексту по центру */
+  gap: 5px; /* Відстань між іконкою та текстом */
 }
 
 .navbar-brand:hover {
-  transform: scale(1.1);
+  transform: none; /* Приберіть ефект збільшення */
 }
 
 .navbar-toggler {
@@ -46,7 +47,7 @@ body {
 }
 
 .nav-link {
-  color: #e3e3e3; /* Легкий сірий */
+  color: #e52e71; /* Легкий сірий */
   font-size: 1rem;
   font-weight: 500;
   padding: 8px 12px;
@@ -55,7 +56,7 @@ body {
 }
 
 .nav-link:hover {
-  color: white;
+  color: #ff8a00;
   background: rgba(255, 255, 255, 0.2); /* Напівпрозоре підсвічування */
   transform: scale(1.05);
 }
@@ -65,6 +66,93 @@ body {
   background: linear-gradient(90deg, #ff8a00, #e52e71); /* Градієнт для активного посилання */
   font-weight: bold;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Підкреслення активності */
+}
+
+/* Центрування пошукового рядка */
+.navbar .form-control {
+  max-width: 500px;
+}
+
+.navbar .btn-outline-success {
+  white-space: nowrap;
+}
+
+.navbar .navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.navbar img {
+  object-fit: cover;
+  margin-right: 0;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px; /* Початкове положення меню (приховане) */
+  width: 250px;
+  height: 100%;
+  background-color: #f8f9fa; /* Світлий фон для меню */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Тінь для меню */
+  transition: left 0.3s ease; /* Анімація */
+  z-index: 1050; /* Вищий пріоритет для накладання */
+}
+
+.sidebar.open {
+  left: 0; /* Відкрите положення меню */
+}
+
+.flex-grow-1 {
+  margin-left: 0; /* Головний контент залишається на місці */
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Напівпрозорий чорний фон */
+  z-index: 1040; /* Трохи нижче за меню */
+  display: none; /* Приховано за замовчуванням */
+}
+
+.overlay.show {
+  display: block; /* Показати, коли меню відкрите */
+}
+
+/* Стилі для пошукового рядка */
+.input-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-group .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none; /* Приберіть межу між полем і кнопкою */
+}
+
+.input-group .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: #007bff; /* Непрозора заливка */
+  color: #fff; /* Білий текст */
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.input-group .btn:hover {
+  background-color: #0056b3; /* Трохи темніший фон при наведенні */
+  color: #e2e6ea; /* Світліший текст при наведенні */
+}
+
+.username {
+  color: #333; /* Встановіть бажаний колір */
+  font-weight: bold; /* За бажанням зробіть текст жирним */
 }
 
 /* Адаптивність */
