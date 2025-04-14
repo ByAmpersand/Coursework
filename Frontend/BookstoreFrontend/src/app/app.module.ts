@@ -5,16 +5,18 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BooksComponent } from './components/book/book.component';
+import { BookComponent } from './components/book/book.component';
 import { AddBookComponent } from './components/add-book/add-book.component';
 import { EditBookComponent } from './components/edit-book/edit-book.component';
+import { BookDetailsComponent } from './components/book-details/book-details.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    BooksComponent,
+    BookComponent,
     AddBookComponent,
-    EditBookComponent
+    EditBookComponent,
+    BookDetailsComponent
   ],
   imports: [
     BrowserModule,

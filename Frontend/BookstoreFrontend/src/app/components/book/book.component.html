@@ -1,35 +1,29 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">Books</h1>
-    <table class="table table-hover table-striped" *ngIf="books && books.length > 0">
-        <thead>
-            <tr>
-                <th scope="col">Book Id</th>
-                <th scope="col">Book Name</th>
-                <th scope="col">Book Genre</th>
-                <th scope="col">Book Price</th>
-                <th scope="col">Book Language</th>
-                <th scope="col">Book Pages</th>
-                <th scope="col">Year</th>
-                <th colspan="2" class="text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let book of books">
-                <td>{{ book.id }}</td>
-                <td>{{ book.name }}</td>
-                <td>{{ book.genre }}</td>
-                <td>{{ book.price | currency }}</td>
-                <td>{{ book.language }}</td>
-                <td>{{ book.numberOfPages }}</td>
-                <td>{{ book.publicationYear }}</td>
-                <td class="text-center">
-                    <a [routerLink]="['/books', 'edit', book.id]" class="btn btn-primary btn-sm">Edit</a>
-                </td>
-                <td class="text-center">
-                    <a href="javascript:void(0);" (click)="deletebooks(book.id)" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <p *ngIf="!books || books.length == 0" class="text-center text-muted">No books Found!</p>
-</div>
+  
+    <!-- Список карток -->
+    <div class="row" *ngIf="books && books.length > 0">
+      <div class="col-md-4 mb-4" *ngFor="let book of books">
+        <div class="card h-100" (click)="viewBookDetails(book.id)" style="cursor: pointer;">
+          <img 
+            src="{{ book.imageUrl || 'assets/default-book-cover.jpg' }}" 
+            class="card-img-top" 
+            alt="Book Cover" 
+            style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h5 class="card-title">{{ book.name }}</h5>
+            <p class="card-text">
+              <strong>Genre:</strong> {{ book.genre }}<br>
+              <strong>Price:</strong> {{ book.price | currency }}<br>
+              <strong>Language:</strong> {{ book.language }}<br>
+              <strong>Pages:</strong> {{ book.numberOfPages }}<br>
+              <strong>Year:</strong> {{ book.publicationYear }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Повідомлення, якщо книг немає -->
+    <p *ngIf="!books || books.length == 0" class="text-center text-muted">No books found!</p>
+  </div>

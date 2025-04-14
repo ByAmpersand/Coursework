@@ -91,6 +91,15 @@ body {
     color: #888;
   }
   
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
   /* Анімація fadeIn для контейнера */
   @keyframes fadeIn {
     from {

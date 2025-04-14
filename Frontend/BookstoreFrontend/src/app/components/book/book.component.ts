@@ -1,43 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Book } from 'src/app/models/book.model';
-import { BooksService } from 'src/app/services/books.service';
 
 @Component({
-  selector: 'app-books',
+  selector: 'app-book',
   templateUrl: './book.component.html',
-  styleUrls: ['./book.component.css'],
+  styleUrls: ['./book.component.css']
 })
-export class BooksComponent implements OnInit {
-  books: Book[] = [];
+export class BookComponent {
+  books = [
+    {
+      id: 1,
+      name: 'Book Title 1',
+      genre: 'Fiction',
+      price: 19.99,
+      language: 'English',
+      numberOfPages: 320,
+      publicationYear: 2021,
+      imageUrl: 'assets/book1.jpg'
+    },
+    {
+      id: 2,
+      name: 'Book Title 2',
+      genre: 'Non-Fiction',
+      price: 24.99,
+      language: 'English',
+      numberOfPages: 250,
+      publicationYear: 2020,
+      imageUrl: 'assets/book2.jpg'
+    },
+    // Додайте більше книг
+  ];
 
-  constructor(
-    private bookService: BooksService,
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    this.bookService.getAllBooks().subscribe({
-      next: (books) => {
-        this.books = books;
-      },
-      error: (response) => {
-        console.log(response);
-      },
-    });
-  }
-
-  deletebooks(id: number) {
-    console.log(id);
-    this.bookService.deleteBook(id).subscribe({
-      next: (response) => {
-        let currentUrl = this.router.url;
-        this.router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => {
-            this.router.navigate([currentUrl]);
-          });
-      }
-    });
+  viewBookDetails(bookId: number): void {
+    this.router.navigate(['/book', bookId]);
   }
 }
