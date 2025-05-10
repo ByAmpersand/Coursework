@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   isMenuOpen: boolean = false;
+  
   searchQuery: string = '';
 
   toggleMenu(): void {

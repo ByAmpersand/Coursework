@@ -5,13 +5,22 @@
   <!-- Sidebar -->
   <nav [class.open]="isMenuOpen" class="sidebar" (click)="$event.stopPropagation()">
     <div class="p-3">
-      <h5 class="text-center">Menu</h5>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-center mb-0">Menu</h5>
+        <button class="close-btn" (click)="closeMenu()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['books']" (click)="closeMenu()">Books</a>
+          <a class="nav-link" [routerLink]="['books']" (click)="closeMenu()">
+            <i class="bi bi-book me-2"></i>Books
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['books', 'add']" (click)="closeMenu()">Add Book</a>
+          <a class="nav-link" [routerLink]="['books', 'add']" (click)="closeMenu()">
+            <i class="bi bi-plus-circle me-2"></i>Add Book
+          </a>
         </li>
       </ul>
     </div>
@@ -19,20 +28,27 @@
 
   <!-- Main Content -->
   <div class="flex-grow-1">
-    <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
-      <div class="container-fluid d-flex align-items-center">
-        <!-- Menu Button -->
-        <button class="btn btn-outline-primary me-3" (click)="toggleMenu()">☰</button>
-
-        <!-- Logo and Bookstore Name -->
-        <div class="d-flex align-items-center me-3">
-          <img src="assets/bookstore-icon.png" alt="Bookstore Icon" style="width: 100px; height: 60px; margin-right: 10px;">
-          <span class="navbar-brand mb-0">Tales & Tomes</span>
+      <div class="container-fluid d-flex justify-content-between align-items-center">
+    
+        <!-- Left Side: Burger + Logo -->
+        <div class="d-flex align-items-center">
+          <!-- Menu Button -->
+          <div class="burger-container me-2">
+            <button class="burger-btn" (click)="toggleMenu()">
+              <span class="burger-icon"></span>
+            </button>
+          </div>
+    
+          <!-- Logo -->
+          <a class="logo-container" [routerLink]="['/']">
+            <img src="assets/bookstore-icon.png" alt="Bookstore Icon" class="logo-icon">
+            <span class="navbar-brand">Tales & Tomes</span>
+          </a>
         </div>
-
-        <!-- Search Bar -->
-        <form class="d-flex flex-grow-1" (submit)="searchBooks()" style="max-width: 600px; margin: 0 auto;">
+    
+        <!-- Center: Search Bar -->
+        <form class="search-container mx-auto" (submit)="searchBooks()" style="min-width: 300px; max-width: 500px; width: 100%;">
           <div class="input-group">
             <input 
               class="form-control" 
@@ -44,14 +60,16 @@
             <button class="btn btn-primary" type="submit">Search</button>
           </div>
         </form>
-
-        <!-- User Info -->
-        <div class="d-flex align-items-center ms-3">
-          <img src="assets/user-icon.png" alt="User Icon" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+    
+        <!-- Right Side: User Profile -->
+        <a class="user-container ms-3" [routerLink]="['/profile']">
+          <img src="assets/user-icon.png" alt="User Icon" class="user-icon">
           <span class="username">Ket Jer</span>
-          </div>
+        </a>
+    
       </div>
     </nav>
+    
 
     <!-- Router Outlet -->
     <div class="p-3">
