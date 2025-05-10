@@ -1,13 +1,14 @@
-# Bookstore App
+# 📚Tales & Tomes 
 
-A full-stack web application for managing and browsing books.
+Tales&Tomes is a book catalog and management system designed for bookstore networks. 
+The system enables users to browse books, view details, and make orders, while administrators can manage the catalog through a user-friendly interface.
 
-## 📚 Description
+## ✨Description
 
 This project is a book catalog and management system for a bookstore. It includes features for:
 
 - Browsing books
-- Adding, editing, deleting books (admin only)
+- Adding, editing and deleting books (admin only)
 - Viewing book details
 - Integration with Google Books API (future)
 - Shopping cart and checkout (future)
