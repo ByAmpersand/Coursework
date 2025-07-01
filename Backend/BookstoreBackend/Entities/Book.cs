@@ -27,13 +27,21 @@ public partial class Book
 
     public DateOnly DateAdded { get; set; }
 
-    public virtual Author Author { get; set; } = null!;
+    public int StockQuantity { get; set; }
 
     public virtual ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
 
+    public virtual ICollection<BookStockLog> BookStockLogs { get; set; } = new List<BookStockLog>();
+
     public virtual Language Language { get; set; } = null!;
 
+    public virtual ICollection<OrderBook> OrderBooks { get; set; } = new List<OrderBook>();
+
     public virtual Publisher Publisher { get; set; } = null!;
+
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+    public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
 
     public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
 }

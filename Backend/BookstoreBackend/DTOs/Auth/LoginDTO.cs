@@ -1,4 +1,4 @@
-﻿namespace BookstoreBackend.DTOs
+﻿namespace BookstoreBackend.DTOs.Auth
 {
     public class LoginDTO
     {

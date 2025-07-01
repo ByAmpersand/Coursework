@@ -1,6 +1,6 @@
-﻿// Program.cs
-using BookstoreBackend.Data;
+﻿using BookstoreBackend.Data;
 using BookstoreBackend.Identity;
+using BookstoreBackend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +9,37 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "BookstoreBackend API", Version = "v1" });
+
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 builder.Services.AddDbContext<BookstoreContext>(options =>
 {
@@ -60,8 +87,14 @@ builder.Services.AddCors(options =>
 });
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.ListenAnyIP(7031); // або інший порт
+    serverOptions.ListenAnyIP(7031);
 });
+
+builder.Services.AddHttpClient("GoogleBooks", client =>
+{
+    client.BaseAddress = new Uri("https://www.googleapis.com/books/v1/");
+});
+builder.Services.AddScoped<IGoogleBooksService, GoogleBooksService>();
 
 var app = builder.Build();
 
@@ -78,7 +111,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Ініціалізація ролей і адміна
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();

@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookstoreBackend.Data;
 using BookstoreBackend.Entities;
-using BookstoreBackend.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using BookstoreBackend.DTOs.Book;
+using BookstoreBackend.DTOs.GoogleBooks;
+using BookstoreBackend.Services;
 
 namespace BookstoreBackend.Controllers
 {
@@ -17,10 +19,24 @@ namespace BookstoreBackend.Controllers
     public class BooksController : ControllerBase
     {
         private readonly BookstoreContext _context;
+        private readonly IGoogleBooksService _googleBooksService;
 
-        public BooksController(BookstoreContext context)
+        public BooksController(BookstoreContext context, IGoogleBooksService googleBooksService)
         {
             _context = context;
+            _googleBooksService = googleBooksService;
+        }
+
+        // НОВИЙ МЕТОД
+        [HttpGet("google-search")]
+        public async Task<ActionResult<IEnumerable<GoogleBookItem>>> SearchGoogleBooks([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest("Search query cannot be empty.");
+            }
+            var results = await _googleBooksService.SearchBooksAsync(query);
+            return Ok(results);
         }
 
         [HttpGet("search")]
@@ -66,144 +82,133 @@ namespace BookstoreBackend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDTO>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookSummaryDTO>>> GetBooks(
+            [FromQuery] string? sortBy,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] int? minYear,
+            [FromQuery] int? maxYear,
+            [FromQuery] int? minPages,
+            [FromQuery] int? maxPages,
+            [FromQuery] List<int>? genreIds,
+            [FromQuery] List<int>? languageIds,
+            [FromQuery] List<int>? authorIds,
+            [FromQuery] List<int>? publisherIds,
+            [FromQuery] bool? inStock)
         {
-            var books = await _context.Books
-                // Якщо у вас Book має ICollection<BookAuthor> BookAuthors для зв'язку з авторами:
-                .Include(b => b.BookAuthors)
-                    .ThenInclude(ba => ba.Author)
-                // Якщо Book має ICollection<Genre> Genres (і EF Core налаштований на неявну таблицю зв'язку):
-                .Include(b => b.Genres) // Просто включаємо колекцію жанрів
-                                        // Якщо у вас явна проміжна таблиця BookGenre і Book має ICollection<BookGenre> BookGenres:
-                                        // .Include(b => b.BookGenres)
-                                        //     .ThenInclude(bg => bg.Genre)
-                .Include(b => b.Publisher)
-                .Include(b => b.Language)
-                .Select(b => new BookDTO // Тут відбувається магія трансформації!
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    // ... інші поля вашого BookDto ...
-                    Price = b.Price,
-                    PublicationYear = b.PublicationYear,
-                    Isbn = b.Isbn, // Якщо додали в DTO
-                    NumberOfPages = b.NumberOfPages, // Якщо додали в DTO
-                    Description = b.Description, // Якщо додали в DTO
-                    Image = b.Image, // Якщо додали в DTO
-                    DateAdded = b.DateAdded, // Якщо додали в DTO
+            var query = _context.Books.AsQueryable();
 
-                    Authors = b.BookAuthors.Select(ba => ba.Author.Name).ToList(), // З колекції BookAuthor беремо імена авторів
+            if (minPrice.HasValue)
+            {
+                query = query.Where(b => b.Price >= minPrice.Value);
+            }
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(b => b.Price <= maxPrice.Value);
+            }
 
-                    // Трансформація ICollection<Genre> в List<string>
-                    Genres = b.Genres.Select(g => g.GenreName).ToList(), // З колекції Genre беремо назви жанрів (припускаючи, що Genre має властивість GenreName)
+            if (minYear.HasValue)
+            {
+                query = query.Where(b => b.PublicationYear >= minYear.Value);
+            }
+            if (maxYear.HasValue)
+            {
+                query = query.Where(b => b.PublicationYear <= maxYear.Value);
+            }
 
-                    PublisherName = b.Publisher != null ? b.Publisher.Name : null,
-                    LanguageName = b.Language != null ? b.Language.LanguageName : null
-                })
-                .ToListAsync();
+            if (minPages.HasValue)
+            {
+                query = query.Where(b => b.NumberOfPages >= minPages.Value);
+            }
+            if (maxPages.HasValue)
+            {
+                query = query.Where(b => b.NumberOfPages <= maxPages.Value);
+            }
+
+            if (genreIds != null && genreIds.Any())
+            {
+                query = query.Where(b => b.Genres.Any(g => genreIds.Contains(g.Id)));
+            }
+
+            if (languageIds != null && languageIds.Any())
+            {
+                query = query.Where(b => languageIds.Contains(b.LanguageId));
+            }
+
+            if (authorIds != null && authorIds.Any())
+            {
+                query = query.Where(b => b.BookAuthors.Any(ba => authorIds.Contains(ba.AuthorId)));
+            }
+
+            if (publisherIds != null && publisherIds.Any())
+            {
+                query = query.Where(b => publisherIds.Contains(b.PublisherId));
+            }
+
+            if (inStock.HasValue && inStock.Value)
+            {
+                query = query.Where(b => b.StockQuantity > 0);
+            }
+
+            if (!string.IsNullOrEmpty(sortBy) && sortBy.Equals("rating_desc", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.OrderByDescending(b => b.Ratings.Any() ? b.Ratings.Average(r => r.RatingStars) : 0);
+            }
+            else
+            {
+                query = query.OrderByDescending(b => b.DateAdded);
+            }
+
+            var books = await query
+            .Select(b => new BookSummaryDTO
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Authors = b.BookAuthors.Select(ba => ba.Author.Name).ToList(),
+                Genres = b.Genres.Select(g => g.GenreName).ToList(),
+                Price = b.Price,
+                Image = b.Image,
+                AverageRating = b.Ratings.Any() ? (double?)b.Ratings.Average(r => r.RatingStars): null
+            })
+            .ToListAsync();
 
             return Ok(books);
         }
 
-        // GET: api/Books/5
-        // GET: api/Books/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDTO>> GetBook(int id)
         {
             var bookDto = await _context.Books
-                .Where(b => b.Id == id) // Спочатку фільтруємо книгу за ID
-                .Include(b => b.BookAuthors) // Включаємо зв'язки для авторів
-                    .ThenInclude(ba => ba.Author) // Потім самих авторів через BookAuthor
-                .Include(b => b.Genres)     // Включаємо колекцію пов'язаних жанрів напряму
-                                            // (Якщо Book має ICollection<Genre> Genres і EF Core керує M2M неявно)
-                .Include(b => b.Publisher)  // Включаємо видавництво
-                .Include(b => b.Language)   // Включаємо мову
-                .Select(b => new BookDTO // Проектуємо результат в BookDto
+                .Where(b => b.Id == id)
+                .Include(b => b.BookAuthors)
+                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.Genres)
+                .Include(b => b.Publisher)
+                .Include(b => b.Language)
+                .Select(b => new BookDTO
                 {
                     Id = b.Id,
                     Title = b.Title,
-                    Authors = b.BookAuthors.Select(ba => ba.Author.Name).ToList(), // Отримуємо список імен авторів
-                    PublisherName = b.Publisher != null ? b.Publisher.Name : null, // Назва видавництва
+                    Authors = b.BookAuthors.Select(ba => ba.Author.Name).ToList(),
+                    PublisherName = b.Publisher != null ? b.Publisher.Name : null,
                     PublicationYear = b.PublicationYear,
                     Isbn = b.Isbn,
                     NumberOfPages = b.NumberOfPages,
-                    LanguageName = b.Language != null ? b.Language.LanguageName : null, // Назва мови
-                    Genres = b.Genres.Select(g => g.GenreName).ToList(), // Отримуємо список назв жанрів
-                                                                         // Припускаючи, що ваша сутність Genre має властивість GenreName
+                    LanguageName = b.Language != null ? b.Language.LanguageName : null,
+                    Genres = b.Genres.Select(g => g.GenreName).ToList(),
                     Price = b.Price,
                     Description = b.Description,
                     Image = b.Image,
                     DateAdded = b.DateAdded
                 })
-                .FirstOrDefaultAsync(); // Отримуємо один результат або null
+                .FirstOrDefaultAsync();
 
             if (bookDto == null)
-            {
-                return NotFound(); // Якщо книгу з таким ID не знайдено
-            }
-
-            return Ok(bookDto); // Повертаємо DTO книги
-        }
-
-        // PUT: api/Books/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
-        {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(book).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Books
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
-        {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
-        }
-
-        // DELETE: api/Books/5
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
-        {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
             {
                 return NotFound();
             }
 
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(bookDto);
         }
 
         private bool BookExists(int id)
