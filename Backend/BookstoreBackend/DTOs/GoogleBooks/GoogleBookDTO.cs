@@ -42,6 +42,9 @@ namespace BookstoreBackend.DTOs.GoogleBooks
 
         [JsonPropertyName("language")]
         public string Language { get; set; }
+
+        [JsonPropertyName("categories")]
+        public List<string> Categories { get; set; }
     }
 
     public class IndustryIdentifier

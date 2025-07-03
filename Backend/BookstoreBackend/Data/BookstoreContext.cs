@@ -186,7 +186,7 @@ public partial class BookstoreContext : IdentityDbContext<ApplicationUser>
         {
             entity.HasKey(e => e.Id).HasName("PK__book_sto__3213E83F8BC94871");
 
-            entity.ToTable("book_stock_log");
+            entity.ToTable("book_stock_log", tb => tb.HasTrigger("trg_UpdateBookStockQuantity"));
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BookId).HasColumnName("book_id");

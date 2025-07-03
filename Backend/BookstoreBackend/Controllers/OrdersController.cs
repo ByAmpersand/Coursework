@@ -82,6 +82,8 @@ namespace BookstoreBackend.Controllers
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
 
+                decimal totalAmount = 0;
+
                 foreach (var item in createOrderDto.OrderItems)
                 {
                     var book = await _context.Books.FindAsync(item.BookId);
@@ -97,6 +99,8 @@ namespace BookstoreBackend.Controllers
                     };
                     _context.OrderBooks.Add(orderBook);
 
+                    totalAmount += book.Price * item.Quantity;
+
                     var stockLog = new BookStockLog
                     {
                         BookId = book.Id,
@@ -108,8 +112,9 @@ namespace BookstoreBackend.Controllers
                     _context.BookStockLogs.Add(stockLog);
                 }
 
-                await _context.SaveChangesAsync();
+                order.TotalAmount = totalAmount;
 
+                await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 return Ok(new { message = "Order created successfully.", orderId = order.Id });

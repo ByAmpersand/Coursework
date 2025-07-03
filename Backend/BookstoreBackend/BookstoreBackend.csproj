@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\SeedData\" />
     <Folder Include="Entities\" />
   </ItemGroup>
 

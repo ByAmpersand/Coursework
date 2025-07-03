@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using BookstoreBackend.Identity;
 using BookstoreBackend.DTOs.Admin;
 
-namespace BookstoreBackend.Controllers
+namespace BookstoreBackend.Controllers.Admin
 {
     [Authorize(Roles = "Admin")]
     [Route("api/Admin/users")]

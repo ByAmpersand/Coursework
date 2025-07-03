@@ -5,7 +5,7 @@ using BookstoreBackend.Data;
 using BookstoreBackend.Entities;
 using BookstoreBackend.DTOs.Book;
 
-namespace BookstoreBackend.Controllers
+namespace BookstoreBackend.Controllers.Admin
 {
     [Authorize(Roles = "Admin")]
     [Route("api/Admin/books")]
@@ -20,7 +20,7 @@ namespace BookstoreBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> CreateBook([FromBody] CreateOrUpdateBookDTO dto)
+        public async Task<ActionResult<CreatedBookDTO>> CreateBook([FromBody] CreateOrUpdateBookDTO dto)
         {
             var newBook = new Book
             {
@@ -40,16 +40,45 @@ namespace BookstoreBackend.Controllers
             var genres = await _context.Genres.Where(g => dto.GenreIds.Contains(g.Id)).ToListAsync();
             newBook.Genres = genres;
 
-            newBook.BookAuthors = dto.AuthorIds.Select(authorId => new BookAuthor
+            var authorEntities = new List<Author>();
+            foreach (var authorInput in dto.Authors)
             {
-                AuthorId = authorId,
-                OrdinalNumber = 0
-            }).ToList();
+                Author? author = null;
+                if (authorInput.Id.HasValue)
+                {
+                    author = await _context.Authors.FindAsync(authorInput.Id.Value);
+                }
+                else if (!string.IsNullOrWhiteSpace(authorInput.Name))
+                {
+                    author = new Author
+                    {
+                        Name = authorInput.Name,
+                        DateOfBirth = authorInput.DateOfBirth ?? new DateOnly(1970, 1, 1),
+                        Biography = authorInput.Biography
+                    };
+                    _context.Authors.Add(author);
+                }
+                if (author != null)
+                {
+                    authorEntities.Add(author);
+                }
+            }
+
+            newBook.BookAuthors = authorEntities.Select(a => new BookAuthor { Author = a, OrdinalNumber = 0 }).ToList();
 
             _context.Books.Add(newBook);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(BooksController.GetBook), "Books", new { id = newBook.Id }, newBook);
+            // Створюємо DTO для відповіді
+            var bookToReturn = new CreatedBookDTO
+            {
+                Id = newBook.Id,
+                Title = newBook.Title,
+                Authors = newBook.BookAuthors.Select(ba => ba.Author.Name).ToList(),
+                Genres = newBook.Genres.Select(g => g.GenreName).ToList()
+            };
+
+            return CreatedAtAction(nameof(BooksController.GetBook), "Books", new { id = newBook.Id }, bookToReturn);
         }
 
         [HttpPut("{id}")]
@@ -60,7 +89,10 @@ namespace BookstoreBackend.Controllers
                 .Include(b => b.Genres)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
-            if (bookToUpdate == null) return NotFound();
+            if (bookToUpdate == null)
+            {
+                return NotFound();
+            }
 
             bookToUpdate.Title = dto.Title;
             bookToUpdate.PublisherId = dto.PublisherId;
@@ -77,13 +109,33 @@ namespace BookstoreBackend.Controllers
             bookToUpdate.Genres = genres;
 
             bookToUpdate.BookAuthors.Clear();
-            foreach (var authorId in dto.AuthorIds)
+
+            foreach (var authorInput in dto.Authors)
             {
-                bookToUpdate.BookAuthors.Add(new BookAuthor
+                Author? author = null;
+                if (authorInput.Id.HasValue)
                 {
-                    AuthorId = authorId,
-                    OrdinalNumber = 0
-                });
+                    author = await _context.Authors.FindAsync(authorInput.Id.Value);
+                }
+                else if (!string.IsNullOrWhiteSpace(authorInput.Name))
+                {
+                    author = new Author
+                    {
+                        Name = authorInput.Name,
+                        DateOfBirth = authorInput.DateOfBirth ?? new DateOnly(1970, 1, 1),
+                        Biography = authorInput.Biography
+                    };
+                    _context.Authors.Add(author);
+                }
+
+                if (author != null)
+                {
+                    bookToUpdate.BookAuthors.Add(new BookAuthor
+                    {
+                        Author = author,
+                        OrdinalNumber = 0
+                    });
+                }
             }
 
             await _context.SaveChangesAsync();

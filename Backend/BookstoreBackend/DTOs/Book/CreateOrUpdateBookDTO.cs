@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BookstoreBackend.DTOs.Admin;
+using BookstoreBackend.DTOs.Author;
 namespace BookstoreBackend.DTOs.Book
 {
     public class CreateOrUpdateBookDTO
@@ -24,7 +26,7 @@ namespace BookstoreBackend.DTOs.Book
         [Required, Range(0, int.MaxValue)]
         public int StockQuantity { get; set; }
         [Required]
-        public required List<int> AuthorIds { get; set; }
+        public required List<AuthorInputDTO> Authors { get; set; }
         [Required]
         public required List<int> GenreIds { get; set; }
     }
